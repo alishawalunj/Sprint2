@@ -127,5 +127,17 @@ logger.error("Exception: "+ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
+@ExceptionHandler(LoginOperationException.class)
+	public ResponseEntity<?> customHandleNotFound1(Exception ex, WebRequest request) {
+		
+		BaseErrorResponse errors = new BaseErrorResponse();
+		errors.setTimestamp(LocalDateTime.now());
+		errors.setMessage(ex.getMessage());
+		errors.setStatusCode(-1);
+		
+		logger.error("Exception :: "+ex.getMessage());
+		
+		return new ResponseEntity<>(errors,HttpStatus.NOT_FOUND);
 
+	}
 }
