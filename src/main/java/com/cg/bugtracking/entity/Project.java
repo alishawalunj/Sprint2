@@ -17,35 +17,35 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 
+//Project entity has Mapping with Employee and Bug entity
 @Entity
-@Table(name = "project_table")
-
+@Table(name = "project_tbl")
 public class Project {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "project_id")
+	@Column(name = "proj_id")
 	private long projectId;
-	
 	@NotEmpty(message = "Please provide a Project Owner")
 	@Column(name = "project_owner")
 	private String projectOwner;
-	
 	@NotEmpty(message = "Please provide a Project Name")
 	@Column(name = "project_name")
 	private String projectName;
-	
 	@NotEmpty(message = "Please provide Project Status")
 	@Column(name = "proj_status")
 	private String status;
 
+	// Mapping with with Employee entity (one to many)
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "project_id")
+	@JoinColumn(name = "proj_id")
 	private List<Employee> members = new ArrayList<>();
 
+	// Mapping with Bug entity(one to many)
 	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "project_id")
+	@JoinColumn(name = "proj_id")
 	private List<Bug> bugList = new ArrayList<>();
 
+    // Project Id
 	public long getProjectId() {
 		return projectId;
 	}
@@ -54,6 +54,7 @@ public class Project {
 		this.projectId = projectId;
 	}
 
+    // Project Owner Info
 	public String getProjectOwner() {
 		return projectOwner;
 	}
@@ -62,6 +63,7 @@ public class Project {
 		this.projectOwner = projectOwner;
 	}
 
+    //Name of Project
 	public String getProjectName() {
 		return projectName;
 	}
@@ -70,6 +72,7 @@ public class Project {
 		this.projectName = projectName;
 	}
 
+    // Project Status
 	public String getStatus() {
 		return status;
 	}
@@ -78,6 +81,7 @@ public class Project {
 		this.status = status;
 	}
 
+	// Members i.e Set of Employees working on the project
 	public List<Employee> getMembers() {
 		return members;
 	}
@@ -86,16 +90,13 @@ public class Project {
 		this.members = members;
 	}
 
+	// Project Bug List
 	public List<Bug> getBugList() {
 		return bugList;
 	}
 
 	public void setBugList(List<Bug> bugList) {
 		this.bugList = bugList;
-	}
-
-	public Project() {
-		super();
 	}
 
 }
