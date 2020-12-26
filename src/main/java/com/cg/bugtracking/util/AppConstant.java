@@ -9,8 +9,8 @@ public class AppConstant {
 	public static final String OPERATION_FAILED_CONST = "Something went wrong: ";
 	public static final String CANT_DELETE_EMPLOYEE = "cant delete this employee ID: ";
 	public static final String CANT_ADD_EMPLOYEE = "cant Add this employee ID: ";
-	public static final String EMPLOYEE_NOT_PART = "cant delete this employee he is not part of the project: ";
-	public static final String EMPLOYEE_ALERADY_PART = "cant add this employee he is alerady part of the project: ";
+	public static final String EMPLOYEE_NOT_PART = "cant delete this employee he is not part of the project Employee Id:: ";
+	public static final String EMPLOYEE_ALERADY_PART = "cant add this employee he is alerady part of the project Employee Id:: ";
 	public static final String OPERATION_FAILED = "Something went wrong: ";
 	public static final String USER_NOT_REGISTERED = "User not registered with this id : ";
 	public static final String LOGIN_FAIL = "Log in Failed. Enter valid password ";
