@@ -151,9 +151,9 @@ public class TestUser {
 		User euser = new User();
 		euser.setUserId("nikiid");
 		euser.setUserPassword("nikipswd");
-		given(employeeRepository.findByEmployee_userid(euser.getUserId())).willReturn(employee);
+		given(employeeRepository.findByEmployeeUserId(euser.getUserId())).willReturn(employee);
 		String loggedemployee = employeeService.employeeLogin(euser);
-		verify(employeeRepository, times(1)).findByEmployee_userid(euser.getUserId());
+		verify(employeeRepository, times(1)).findByEmployeeUserId(euser.getUserId());
 		assertEquals(str, loggedemployee);
 	}
 
@@ -201,7 +201,7 @@ public class TestUser {
 		User auser = new User();
 		auser.setUserId("nikiid");
 		auser.setUserPassword("test");
-		given(employeeRepository.findByEmployee_userid(auser.getUserId())).willReturn(employee);
+		given(employeeRepository.findByEmployeeUserId(auser.getUserId())).willReturn(employee);
 		Exception exception = assertThrows(LoginOperationException.class, () -> {
 			employeeService.employeeLogin(auser);
 		});

@@ -14,10 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cg.bugtracking.entity.Admin;
 import com.cg.bugtracking.payload.User;
 import com.cg.bugtracking.payload.BaseResponse;
-
+import com.cg.bugtracking.service.AdminService;
 import com.cg.bugtracking.service.AdminServiceImpl;
-
+import com.cg.bugtracking.service.EmployeeService;
 import com.cg.bugtracking.service.EmployeeServiceImpl;
+
+import io.swagger.annotations.ApiOperation;
+
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +37,9 @@ public class UserController {
 
 	private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	@Autowired // To establish the relationship with admin service
-	private AdminServiceImpl adminService;
+	private AdminService adminService;
 	@Autowired // To establish the relationship with employee service
-	private EmployeeServiceImpl employeeService;
+	private EmployeeService employeeService;
 
 	/**
 	 * This method is used to call the createAdmin method from the service layer.
@@ -44,8 +49,9 @@ public class UserController {
 	 * @param baseresponse is used to store the object of Baseresponse class and
 	 *                     invoke it's parameters
 	 */
-	@PostMapping("/admin/createadmin")
-	public ResponseEntity<?> registerAdmin(@RequestBody Admin admin) {
+	@PostMapping("/admin/create-admin")
+	@ApiOperation(value = "create an admin")
+	public ResponseEntity<?> registerAdmin(@Valid @RequestBody Admin admin) {
 		logger.info("Enter UserController :: method=registerAdmin");
 
 		Admin admin1 = adminService.createAdmin(admin);
@@ -66,8 +72,9 @@ public class UserController {
 	 * @param baseresponse is used to store the object of Baseresponse class and
 	 *                     invoke it's parameters
 	 */
-	@GetMapping("/admin/adminlogin")
-	public ResponseEntity<?> adminLogin(@RequestBody User auser) {
+	@PostMapping("/admin/admin-login")
+	@ApiOperation(value = "Admin Login")
+	public ResponseEntity<?> adminLogin(@Valid @RequestBody User auser) {
 		logger.info("Enter UserController :: method=admiLogin");
 
 		String str = adminService.adminLogin(auser);
@@ -88,8 +95,9 @@ public class UserController {
 	 * @param baseresponse is used to store the object of Baseresponse class and
 	 *                     invoke it's parameters
 	 */
-	@GetMapping("/employee/employeelogin")
-	public ResponseEntity<?> employeeLogin(@RequestBody User euser) {
+	@PostMapping("/employees/employee-login")
+	@ApiOperation(value = "Employee Login")
+	public ResponseEntity<?> employeeLogin(@Valid @RequestBody User euser) {
 		logger.info("Enter UserController :: method=employeeLogin");
 		String str = employeeService.employeeLogin(euser);
 		BaseResponse baseResponse = new BaseResponse();

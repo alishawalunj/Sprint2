@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {// AdminService should im
 		String adminPswd = auser.getUserPassword();
 		Admin loginAdmin = adminRespository.findByAdmin_userid(adminUid);
 		if (loginAdmin == null) {
-			throw new LoginOperationException(USER_NOT_REGISTERED);
+			throw new LoginOperationException(USER_NOT_REGISTERED+adminUid);
 		} else {
 			String loggedAdminpswd = loginAdmin.getAdminPassword();
 			if (loggedAdminpswd.equals(adminPswd)) {

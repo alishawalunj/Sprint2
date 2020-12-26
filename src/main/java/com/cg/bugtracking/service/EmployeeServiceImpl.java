@@ -156,19 +156,28 @@ public class EmployeeServiceImpl implements EmployeeService{
 		return employeeRepository.findAll();
 	}
 	
-	
+	/**
+	 * @This method is used for logging into the system using id and password
+	 * @param euser              This is used as a payload which holds id and
+	 *                           password of employee which is passed to the method
+	 * @param loginEmployee      is used as temporary variable to fetch the user
+	 * @param loggedEmployeepswd is used as temporary variable to store password
+	 *                           retrieved from database
+	 * @return str This Method returns the string describing which action has
+	 *         executed
+	 * @throws LoginOperationException is thrown
+	 */
 
-
-	
 	@Override
 	public String employeeLogin(User euser) {
 		// TODO Auto-generated method stub
 		String str = null;
 		String employeeUid = euser.getUserId();
 
-		Employee loginEmployee = employeeRepository.findByEmployee_userid(employeeUid);
+		Employee loginEmployee = employeeRepository.findByEmployeeUserId(employeeUid);
+		
 		if (loginEmployee == null) {
-			throw new LoginOperationException(USER_NOT_REGISTERED);
+			throw new LoginOperationException(USER_NOT_REGISTERED+employeeUid);
 		} else {
 
 			String loggedEmployeepswd = loginEmployee.getEmployeePassword();

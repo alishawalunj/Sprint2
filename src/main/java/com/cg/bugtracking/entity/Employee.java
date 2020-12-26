@@ -38,7 +38,7 @@ public class Employee {
 	private String employeeContact;
 	
 	@NotNull(message="Userid cannot be empty")
-	@Column(name="employee_userId")
+	@Column(name="employeeUserId")
 	private String employeeUserId;
 	
 	@NotEmpty(message="Password cannot be empty")

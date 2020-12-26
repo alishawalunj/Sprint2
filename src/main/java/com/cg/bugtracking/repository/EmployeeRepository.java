@@ -12,7 +12,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {//All
 	 * from the employee table using the userId 
 	 */
 	
-	@Query("Select e from Employee e where employeeUserid=:userId")
-	public Employee findByEmployee_userid(@Param("userId") String userId);
+	@Query("Select e from Employee e where employeeUserId=:userId")
+	public Employee findByEmployeeUserId(@Param("userId") String userId);
 }
 
