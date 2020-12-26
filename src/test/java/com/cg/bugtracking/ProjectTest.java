@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.BDDMockito.given;
 import com.cg.bugtracking.entity.Employee;
 import com.cg.bugtracking.entity.Project;
+import com.cg.bugtracking.exceptions.CantAddEmployee;
+import com.cg.bugtracking.exceptions.CantDeleteEmployee;
 import com.cg.bugtracking.exceptions.ResourceNotFoundException;
 import com.cg.bugtracking.repository.EmployeeRepository;
 import com.cg.bugtracking.repository.ProjectRepository;
@@ -38,18 +41,38 @@ public class ProjectTest {
 	private ProjectRepository projectRepository;
 	@Mock
 	private EmployeeRepository employeeRepository;
-    @InjectMocks
+	@InjectMocks
 	private ProjectServiceImpl projectService;
-	
 
-	@DisplayName(" Test Case for Creating a Project")
-	@Test
-	void testCreateProduct() {
-		Project projectOne = new Project();
+	private Project projectOne;
+	private Project projectTwo;
+	private Employee employeeOne;
+
+// used in most test cases with a bit of difference in values
+	@BeforeEach
+	void create() {
+		projectOne = new Project();
 		projectOne.setProjectId(Long.valueOf(901));
 		projectOne.setProjectName("first");
 		projectOne.setProjectOwner(new String("capg"));
 		projectOne.setStatus(new String("ongoing"));
+		projectTwo = new Project();
+		projectTwo.setProjectId(Long.valueOf(901));
+		projectTwo.setProjectName("second");
+		projectTwo.setProjectOwner(new String("capg"));
+		projectTwo.setStatus(new String("ongoing"));
+		employeeOne = new Employee();
+		employeeOne.setEmployeeEmail("gmail");
+		employeeOne.setEmployeeContact("09888");
+		employeeOne.setEmpId(Long.valueOf(101));
+		employeeOne.setEmpName(new String("raj"));
+
+	}
+
+// createProject test case
+	@DisplayName(" Test Case for Creating a Project")
+	@Test
+	void testCreateProduct() {
 
 		given(projectRepository.save(projectOne)).willReturn(projectOne);
 		Project savedProject = projectService.createProject(projectOne);
@@ -58,79 +81,63 @@ public class ProjectTest {
 
 	}
 
+// findProject test case
 	@DisplayName("Test case for  finding a Project")
 	@Test
 	void testFindProjectById() {
-		long projectId = 901;
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner(new String("capg"));
-		projectOne.setStatus(new String("ongoing"));
 
-		given(projectRepository.findById(projectId)).willReturn(Optional.of(projectOne));
-		Project expected = projectService.findProject(projectId);
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		Project expected = projectService.findProject(Long.valueOf(901));
 		Assertions.assertThat(expected).isNotNull();
 
 	}
+
+//getAllProject test case
 	@DisplayName(" Test Case for find all Project")
 	@Test
 	public void testFindAllProjects() {
-		// given
-		long projectId = 901;
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner(new String("capg"));
-		projectOne.setStatus(new String("ongoing"));
+
 		List<Project> expectedProducts = Arrays.asList(projectOne);
 
-		// Mockito.doReturn(expectedProducts).when(productRepository).findAll();
 		given(projectRepository.findAll()).willReturn(expectedProducts);
 
-		// when
 		List<Project> actualProducts = projectService.getAllProject();
-		// then
+
 		Assertions.assertThat(actualProducts).isEqualTo(expectedProducts);
-		// assertEquals(actualProducts,expectedProducts);
+
 	}
+
+// updateProject test case
 	@DisplayName(" Test Case for updating a Project")
+
 	@Test
 	void shouldUpdateProject() {
-		long projectId = 901;
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner(new String("capg"));
-		projectOne.setStatus(new String("ongoing"));
 
-		given(projectRepository.save(projectOne)).willReturn(projectOne);
-		given(projectRepository.findById(projectId)).willReturn(Optional.of(projectOne));
+		
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
 
-		Project expectedProject = projectService.updateProject(projectOne.getProjectId(), projectOne);
+		Project expectedProject = projectService.updateProject(projectOne.getProjectId(), projectTwo);
 
-		Assertions.assertThat(expectedProject).isNotNull();
+		assertEquals(projectTwo.getProjectName(), expectedProject.getProjectName());
 
 	}
+
+//deleteProject test case
 	@DisplayName(" Test Case for deleting a Project")
+
 	@Test
 	public void shouldBeDeleted() {
-		long projectId = 100;
 
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner(new String("capg"));
-		projectOne.setStatus(new String("ongoing"));
-		given(projectRepository.findById(projectId)).willReturn(Optional.of(projectOne));
-		projectService.deleteProject(projectId);
-		projectService.deleteProject(projectId);
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		projectService.deleteProject(Long.valueOf(901));
+		projectService.deleteProject(Long.valueOf(901));
 		verify(projectRepository, times(2)).delete(projectOne);
 
 	}
-	
-	@DisplayName(" Project Not Found Test case for find A project")
-	
+
+//findProject test case
+	@DisplayName(" Project Not Found Test case for finding project")
+
 	@Test
 	public void testFindProjectByIdWhenExceptionThrown() {
 
@@ -143,30 +150,24 @@ public class ProjectTest {
 		assertEquals(actualMessage, expectedMessage);
 	}
 
-	
-
-	
+//updateProject(projectnotfound) test case
 	@DisplayName(" Project Not Found Test case for update a project")
+
 	@Test
 	void NotFoundExceptionUpdateProject() {
-		long projectId = 901;
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner(new String("capg"));
-		projectOne.setStatus(new String("ongoing"));
 
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
 			projectService.updateProject(projectOne.getProjectId(), projectOne);
 		});
-		String expectedMessage = PROJECT_NOT_FOUND_CONST + projectId;
+		String expectedMessage = PROJECT_NOT_FOUND_CONST + Long.valueOf(901);
 		String actualMessage = exception.getMessage();
 		assertEquals(actualMessage, expectedMessage);
 
 	}
 
-	
+	// deleteProject(projectnotfound) test case
 	@DisplayName(" Project Not Found Test case for Deleting a project")
+
 	@Test
 	public void NotFoundDeleted() {
 
@@ -178,61 +179,101 @@ public class ProjectTest {
 		String actualMessage = exception.getMessage();
 		assertEquals(actualMessage, expectedMessage);
 	}
+
+	// addEmployeeProject test case
 	@DisplayName(" add employee to a  project")
+
 	@Test
 	void addEmployeeProjectTest() {
-		long projectId = 901;
-		long employeeId = 101;
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner(new String("capg"));
-		projectOne.setStatus(new String("ongoing"));
 
-		Employee employeeOne = new Employee();
-		employeeOne.setEmployeeEmail("gmail");
-		employeeOne.setEmployeeContact("09888");
-		employeeOne.setEmpId(employeeId);
-		employeeOne.setEmpName(new String("raj"));
 		employeeOne.setEmpStatus(new String("free"));
 
-		given(projectRepository.findById(projectId)).willReturn(Optional.of(projectOne));
-		given(employeeRepository.findById(employeeId)).willReturn(Optional.of(employeeOne));
-		Project expected = projectService.addEmployeeProject(projectId, employeeId);
-		//Assertions.assertThat(expected).isNotNull();
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		given(employeeRepository.findById(Long.valueOf(101))).willReturn(Optional.of(employeeOne));
+		Project expected = projectService.addEmployeeProject(Long.valueOf(901), Long.valueOf(101)); //
+		Assertions.assertThat(expected).isNotNull();
 
-        assertEquals(1,expected.getMembers().size());
+		assertEquals(1, expected.getMembers().size());
 	}
+
+	// deleteEmployeeProject test case
 	@DisplayName(" delete employee from a  project")
+
 	@Test
 	void deleteEmployeeProjectTest() {
-		long projectId = 901;
-		long employeeId = 101;
-		Project projectOne = new Project();
-		projectOne.setProjectId(projectId);
-		projectOne.setProjectName("first");
-		projectOne.setProjectOwner("capg");
-		projectOne.setStatus("ongoing");
 
-		Employee employeeOne = new Employee();
-		employeeOne.setEmployeeEmail("gmail");
-		employeeOne.setEmployeeContact("09888");
-		employeeOne.setEmpId(employeeId);
-		employeeOne.setEmpName("raj");
 		employeeOne.setEmpStatus("Assigned");
-		List<Employee> members =new  ArrayList<>();
+		List<Employee> members = new ArrayList<>();
 		members.add(employeeOne);
 		projectOne.setMembers(members);
-		given(projectRepository.findById(projectId)).willReturn(Optional.of(projectOne));
-		given(employeeRepository.findById(employeeId)).willReturn(Optional.of(employeeOne));
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		given(employeeRepository.findById(Long.valueOf(101))).willReturn(Optional.of(employeeOne));
 		System.out.print(projectOne.getMembers().size());
-		Project expected = projectService.deleteEmployeeProject(projectOne.getProjectId(), employeeOne.getEmpId());
-		//Assertions.assertThat(expected).isNotNull();
-		
-        assertEquals(0,expected.getMembers().size());
-	}
-	
+		Project expected = projectService.deleteEmployeeProject(projectOne.getProjectId(), employeeOne.getEmpId()); // Assertions.assertThat(expected).isNotNull();
 
-	
+		assertEquals(0, expected.getMembers().size());
+	}
+
+	// addEmployeeProject(aleradyPart) test case
+	@DisplayName(" cant add employee to the project he is alerady part of the project")
+
+	@Test
+	void cantAddEmployeeAleradyProjectTest() {
+
+		employeeOne.setEmpStatus(new String("free"));
+		List<Employee> members = new ArrayList<>();
+		members.add(employeeOne);
+		projectOne.setMembers(members);
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		given(employeeRepository.findById(Long.valueOf(101))).willReturn(Optional.of(employeeOne)); // Assertions.assertThat(expected).isNotNull();
+
+		Exception exception = assertThrows(CantAddEmployee.class, () -> {
+			projectService.addEmployeeProject(Long.valueOf(901), Long.valueOf(101));
+		});
+		String expectedMessage = EMPLOYEE_ALERADY_PART + Long.valueOf(101);
+		String actualMessage = exception.getMessage();
+		assertEquals(actualMessage, expectedMessage);
+
+	}
+
+	// addEmployeeProject(anotherProject) test case
+	@DisplayName(" cant add employee to the project he is part of other project")
+
+	@Test
+	void cantAddEmployeeOtherProjectTest() {
+
+		employeeOne.setEmpStatus(new String("Assigned"));
+
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		given(employeeRepository.findById(Long.valueOf(101))).willReturn(Optional.of(employeeOne)); // Assertions.assertThat(expected).isNotNull();
+
+		Exception exception = assertThrows(CantAddEmployee.class, () -> {
+			projectService.addEmployeeProject(Long.valueOf(901), Long.valueOf(101));
+		});
+		String expectedMessage = CANT_ADD_EMPLOYEE + Long.valueOf(101);
+		String actualMessage = exception.getMessage();
+		assertEquals(actualMessage, expectedMessage);
+
+	}
+
+	// deleteEmployeeProject(cantDeleteEmployee) test case
+	@DisplayName(" cant delete employee from project")
+
+	@Test
+	void cantDeleteEmployeeProjectTest() {
+
+		employeeOne.setEmpStatus(new String("Assigned"));
+
+		given(projectRepository.findById(Long.valueOf(901))).willReturn(Optional.of(projectOne));
+		given(employeeRepository.findById(Long.valueOf(101))).willReturn(Optional.of(employeeOne)); // Assertions.assertThat(expected).isNotNull();
+
+		Exception exception = assertThrows(CantDeleteEmployee.class, () -> {
+			projectService.deleteEmployeeProject(Long.valueOf(901), Long.valueOf(101));
+		});
+		String expectedMessage = EMPLOYEE_NOT_PART + Long.valueOf(101);
+		String actualMessage = exception.getMessage();
+		assertEquals(actualMessage, expectedMessage);
+
+	}
 
 }
